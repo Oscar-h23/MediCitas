@@ -1,0 +1,530 @@
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow">
+
+    <a class="navbar-brand fw-bold fs-3">
+      MediCitas — Admin
+    </a>
+  
+    <div class="ms-auto d-flex align-items-center gap-3">
+  
+      <span class="text-white fw-semibold">
+        {{ usuario?.name }}
+        <span class="badge bg-warning text-dark ms-1">Admin</span>
+      </span>
+  
+      <button class="btn btn-light" (click)="irHome()">
+        <i class="bi bi-house me-1"></i> Inicio
+      </button>
+  
+      <button class="btn btn-outline-light" (click)="cerrarSesion()">
+        <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
+      </button>
+  
+    </div>
+  
+  </nav>
+  
+  <div class="container-fluid py-4 px-5">
+  
+    <!-- TABS -->
+    <ul class="nav nav-pills mb-4 gap-2">
+  
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="tabActiva === 'dashboard'"
+          (click)="tabActiva = 'dashboard'">
+          <i class="bi bi-bar-chart me-1"></i> Dashboard
+        </button>
+      </li>
+  
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="tabActiva === 'doctores'"
+          (click)="tabActiva = 'doctores'">
+          <i class="bi bi-person-badge me-1"></i> Doctores
+        </button>
+      </li>
+  
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="tabActiva === 'citas'"
+          (click)="tabActiva = 'citas'">
+          <i class="bi bi-calendar-check me-1"></i> Citas
+        </button>
+      </li>
+  
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="tabActiva === 'usuarios'"
+          (click)="tabActiva = 'usuarios'">
+          <i class="bi bi-people me-1"></i> Usuarios
+        </button>
+      </li>
+  
+    </ul>
+  
+    <!-- Cargando -->
+    <div *ngIf="cargando" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Cargando datos...</p>
+    </div>
+  
+    <div *ngIf="!cargando">
+  
+      <!-- =====================
+           TAB: DASHBOARD
+      ===================== -->
+      <div *ngIf="tabActiva === 'dashboard'">
+  
+        <h4 class="fw-bold mb-4">Resumen general</h4>
+  
+        <!-- CARDS PRINCIPALES -->
+        <div class="row g-4 mb-4">
+  
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4" style="border-radius: 16px;">
+              <div class="fs-1 text-primary mb-2">
+                <i class="bi bi-person-badge"></i>
+              </div>
+              <h2 class="fw-bold">{{ totalDoctores }}</h2>
+              <p class="text-muted mb-0">Doctores</p>
+            </div>
+          </div>
+  
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4" style="border-radius: 16px;">
+              <div class="fs-1 text-success mb-2">
+                <i class="bi bi-calendar-check"></i>
+              </div>
+              <h2 class="fw-bold">{{ totalCitas }}</h2>
+              <p class="text-muted mb-0">Citas totales</p>
+            </div>
+          </div>
+  
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4" style="border-radius: 16px;">
+              <div class="fs-1 text-warning mb-2">
+                <i class="bi bi-clock"></i>
+              </div>
+              <h2 class="fw-bold">{{ citasPendientes }}</h2>
+              <p class="text-muted mb-0">Citas pendientes</p>
+            </div>
+          </div>
+  
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4" style="border-radius: 16px;">
+              <div class="fs-1 text-info mb-2">
+                <i class="bi bi-people"></i>
+              </div>
+              <h2 class="fw-bold">{{ totalUsuarios }}</h2>
+              <p class="text-muted mb-0">Usuarios</p>
+            </div>
+          </div>
+  
+        </div>
+  
+        <!-- CITAS HOY + DISTRIBUCIÓN -->
+        <div class="row g-4 mb-4">
+  
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+              <h6 class="fw-bold text-muted mb-3">
+                <i class="bi bi-calendar-day me-2"></i>Citas hoy
+              </h6>
+              <h1 class="fw-bold text-primary">{{ citasHoy }}</h1>
+              <p class="text-muted mb-0">citas programadas para hoy</p>
+            </div>
+          </div>
+  
+          <div class="col-md-8">
+            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+  
+              <h6 class="fw-bold text-muted mb-3">
+                <i class="bi bi-pie-chart me-2"></i>Distribución de citas
+              </h6>
+  
+              <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small fw-semibold">Pendientes</span>
+                  <span class="small text-muted">{{ citasPendientes }} ({{ porcentajePendientes }}%)</span>
+                </div>
+                <div class="progress" style="height: 10px; border-radius: 10px;">
+                  <div
+                    class="progress-bar bg-success"
+                    [style.width.%]="porcentajePendientes">
+                  </div>
+                </div>
+              </div>
+  
+              <div>
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small fw-semibold">Completadas</span>
+                  <span class="small text-muted">{{ citasPasadas }} ({{ porcentajePasadas }}%)</span>
+                </div>
+                <div class="progress" style="height: 10px; border-radius: 10px;">
+                  <div
+                    class="progress-bar bg-secondary"
+                    [style.width.%]="porcentajePasadas">
+                  </div>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+  
+        </div>
+  
+        <!-- TOP PACIENTES / DOCTORES / ESPECIALIDADES -->
+        <div class="row g-4 mb-4">
+  
+          <!-- Top Pacientes -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+  
+              <h6 class="fw-bold text-muted mb-3">
+                <i class="bi bi-trophy me-2 text-warning"></i>Pacientes frecuentes
+              </h6>
+  
+              <div *ngIf="topPacientes.length === 0" class="text-muted small">
+                Sin datos aún.
+              </div>
+  
+              <div *ngFor="let p of topPacientes; let i = index" class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small fw-semibold">
+                    {{ medallaEmoji(i) }} {{ p.nombre }}
+                  </span>
+                  <span class="badge bg-primary rounded-pill">{{ p.total }} citas</span>
+                </div>
+                <div class="progress" style="height: 6px; border-radius: 10px;">
+                  <div
+                    class="progress-bar bg-primary"
+                    [style.width.%]="(p.total / maxCitasPaciente) * 100">
+                  </div>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+  
+          <!-- Top Doctores -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+  
+              <h6 class="fw-bold text-muted mb-3">
+                <i class="bi bi-star me-2 text-warning"></i>Doctores más solicitados
+              </h6>
+  
+              <div *ngIf="topDoctores.length === 0" class="text-muted small">
+                Sin datos aún.
+              </div>
+  
+              <div *ngFor="let d of topDoctores; let i = index" class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small fw-semibold">
+                    {{ medallaEmoji(i) }} {{ d.nombre }}
+                  </span>
+                  <span class="badge bg-success rounded-pill">{{ d.total }} citas</span>
+                </div>
+                <div class="progress" style="height: 6px; border-radius: 10px;">
+                  <div
+                    class="progress-bar bg-success"
+                    [style.width.%]="(d.total / maxCitasDoctor) * 100">
+                  </div>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+  
+          <!-- Top Especialidades -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+  
+              <h6 class="fw-bold text-muted mb-3">
+                <i class="bi bi-heart-pulse me-2 text-danger"></i>Especialidades más solicitadas
+              </h6>
+  
+              <div *ngIf="topEspecialidades.length === 0" class="text-muted small">
+                Sin datos aún.
+              </div>
+  
+              <div *ngFor="let e of topEspecialidades" class="mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="small fw-semibold">{{ e.nombre }}</span>
+                  <span class="badge bg-danger rounded-pill">{{ e.total }}</span>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+  
+        </div>
+  
+        <!-- ÚLTIMAS CITAS -->
+        <div class="card border-0 shadow-sm p-4" style="border-radius: 16px;">
+  
+          <h6 class="fw-bold text-muted mb-3">
+            <i class="bi bi-clock-history me-2"></i>Últimas citas registradas
+          </h6>
+  
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Paciente</th>
+                  <th>Doctor</th>
+                  <th>Especialidad</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cita of citas.slice(-5).reverse()">
+                  <td>{{ cita.id }}</td>
+                  <td>{{ cita.paciente }}</td>
+                  <td>{{ cita.doctor || 'Doctor #' + cita.doctorId }}</td>
+                  <td>{{ cita.especialidad || '—' }}</td>
+                  <td>{{ cita.fecha }}</td>
+                  <td>{{ cita.hora }}</td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.bg-success]="cita.fecha >= hoy"
+                      [class.bg-secondary]="cita.fecha < hoy">
+                      {{ cita.fecha >= hoy ? 'Pendiente' : 'Completada' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+  
+        </div>
+  
+      </div>
+  
+      <!-- =====================
+           TAB: DOCTORES
+      ===================== -->
+      <div *ngIf="tabActiva === 'doctores'">
+  
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold mb-0">Gestión de Doctores</h4>
+          <button class="btn btn-primary" (click)="abrirCrear()">
+            <i class="bi bi-plus-lg me-1"></i> Nuevo Doctor
+          </button>
+        </div>
+  
+        <!-- Formulario crear / editar -->
+        <div
+          *ngIf="modoForm"
+          class="card border-0 shadow-sm p-4 mb-4"
+          style="border-radius: 16px;">
+  
+          <h5 class="fw-bold mb-4">
+            {{ modoForm === 'crear' ? 'Crear nuevo doctor' : 'Editar doctor' }}
+          </h5>
+  
+          <div class="row g-3">
+  
+            <div class="col-md-6">
+              <label class="form-label">Nombre completo</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="doctorForm.nombre"
+                placeholder="Dr. Nombre Apellido">
+            </div>
+  
+            <div class="col-md-6">
+              <label class="form-label">Especialidad</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="doctorForm.especialidad"
+                placeholder="Cardiología, Pediatría...">
+            </div>
+  
+            <div class="col-md-8">
+              <label class="form-label">URL Foto</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="doctorForm.foto"
+                placeholder="https://...">
+            </div>
+  
+            <div class="col-md-4">
+              <label class="form-label">
+                Horarios
+                <small class="text-muted">(separados por coma)</small>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="doctorForm.horarios"
+                placeholder="09:00, 10:00, 11:00">
+            </div>
+  
+          </div>
+  
+          <div class="d-flex gap-2 mt-4">
+  
+            <button class="btn btn-primary" (click)="guardarDoctor()">
+              <i class="bi bi-check-lg me-1"></i>
+              {{ modoForm === 'crear' ? 'Crear' : 'Guardar cambios' }}
+            </button>
+  
+            <button class="btn btn-outline-secondary" (click)="cerrarForm()">
+              Cancelar
+            </button>
+  
+          </div>
+  
+        </div>
+  
+        <!-- Lista doctores -->
+        <div class="row g-4">
+  
+          <div class="col-md-4" *ngFor="let doctor of doctores">
+  
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px; overflow: hidden;">
+  
+              <img
+                [src]="doctor.foto"
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;">
+  
+              <div class="card-body p-4">
+  
+                <h5 class="fw-bold mb-1">{{ doctor.nombre }}</h5>
+  
+                <p class="text-primary fw-semibold mb-2">
+                  {{ doctor.especialidad }}
+                </p>
+  
+                <p class="text-muted small mb-3">
+                  <i class="bi bi-clock me-1"></i>
+                  {{ doctor.horarios.join(', ') }}
+                </p>
+  
+                <button
+                  class="btn btn-outline-primary btn-sm w-100"
+                  (click)="abrirEditar(doctor)">
+                  <i class="bi bi-pencil me-1"></i> Editar
+                </button>
+  
+              </div>
+  
+            </div>
+  
+          </div>
+  
+        </div>
+  
+      </div>
+  
+      <!-- =====================
+           TAB: CITAS
+      ===================== -->
+      <div *ngIf="tabActiva === 'citas'">
+  
+        <h4 class="fw-bold mb-4">Gestión de Citas</h4>
+  
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+  
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Paciente</th>
+                <th>Doctor</th>
+                <th>Especialidad</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+  
+            <tbody>
+              <tr *ngFor="let cita of citas">
+                <td>{{ cita.id }}</td>
+                <td>{{ cita.paciente }}</td>
+                <td>{{ cita.doctor || 'Doctor #' + cita.doctorId }}</td>
+                <td>{{ cita.especialidad || '—' }}</td>
+                <td>{{ cita.fecha }}</td>
+                <td>{{ cita.hora }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.bg-success]="cita.fecha >= hoy"
+                    [class.bg-secondary]="cita.fecha < hoy">
+                    {{ cita.fecha >= hoy ? 'Pendiente' : 'Completada' }}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="cancelarCita(cita.id)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+  
+          </table>
+        </div>
+  
+      </div>
+  
+      <!-- =====================
+           TAB: USUARIOS
+      ===================== -->
+      <div *ngIf="tabActiva === 'usuarios'">
+  
+        <h4 class="fw-bold mb-4">Gestión de Usuarios</h4>
+  
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+  
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+              </tr>
+            </thead>
+  
+            <tbody>
+              <tr *ngFor="let u of usuarios">
+                <td>{{ u.id }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.bg-warning]="u.rol === 'admin'"
+                    [class.bg-primary]="u.rol === 'cliente'">
+                    {{ u.rol }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+  
+          </table>
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  </div>

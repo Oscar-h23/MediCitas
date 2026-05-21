@@ -1,0 +1,88 @@
+<div class="container-fluid vh-100">
+
+    <div class="row h-100">
+  
+      <!-- Imagen -->
+      <div class="col-md-6 d-none d-md-block p-0">
+  
+        <img
+          src="https://static.studyusa.com/article/aws_9CZM8SOpRgaVQQ1MnX8HxiuLzY8AOMoD_sm_2x.jpg"
+          alt="login"
+          class="img-fluid h-100 w-100 object-fit-cover">
+  
+      </div>
+  
+      <!-- Formulario -->
+      <div class="col-md-6 d-flex justify-content-center align-items-center bg-light">
+  
+        <div class="card shadow-lg border-0 p-5" style="width: 420px; border-radius: 20px;">
+  
+          <div class="text-center mb-4">
+  
+            <h2 class="fw-bold">
+              Iniciar Sesión
+            </h2>
+  
+            <p class="text-muted">
+              Bienvenido nuevamente
+            </p>
+  
+          </div>
+  
+          <!-- Correo -->
+          <div class="mb-3">
+  
+            <label class="form-label">
+              Correo
+            </label>
+  
+            <input
+              type="email"
+              class="form-control form-control-lg"
+              [(ngModel)]="email"
+              placeholder="Ingrese su correo">
+  
+          </div>
+  
+          <!-- Password -->
+          <div class="mb-4">
+  
+            <label class="form-label">
+              Contraseña
+            </label>
+  
+            <input
+              type="password"
+              class="form-control form-control-lg"
+              [(ngModel)]="password"
+              placeholder="Ingrese su contraseña">
+  
+          </div>
+  
+          <!-- Botón -->
+          <button
+            class="btn btn-dark btn-lg w-100"
+            (click)="login()">
+  
+            Ingresar
+  
+          </button>
+          <!-- Separador -->
+        <div class="text-center text-muted mb-3">
+            <small>¿No tienes una cuenta?</small>
+          </div>
+  
+          <!-- Botón Registro -->
+          <button
+            class="btn btn-outline-dark btn-lg w-100"
+            (click)="irARegistro()">
+            Crear cuenta
+          </button>
+  
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  </div>

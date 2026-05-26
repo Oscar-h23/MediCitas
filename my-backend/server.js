@@ -68,6 +68,22 @@ let usuarios = [
     email: 'jose@test.com',
     password: '123456',
     rol: 'cliente'
+  },
+  {
+    id: 7,
+    name: 'Dr. Juan Pérez',
+    email: 'juanperez@test.com',
+    password: '123456',
+    rol: 'doctor',
+    doctorId: 1          
+  },
+  {
+    id: 8,
+    name: 'Dra. Ana Gómez',
+    email: 'anagomez@test.com',
+    password: '123456',
+    rol: 'doctor',
+    doctorId: 2
   }
 ];
 
@@ -151,7 +167,8 @@ let citas = [
     precioConsulta: 50,
     paciente: 'Oscar Herrera',
     fecha: '2026-05-20',
-    hora: '10:00'
+    hora: '10:00',
+    estado: 'pendiente'
   },
   {
     id: 2,
@@ -161,7 +178,8 @@ let citas = [
     precioConsulta: 40,
     paciente: 'María López',
     fecha: '2026-05-22',
-    hora: '14:00'
+    hora: '14:00',
+    estado: 'pendiente'
   },
   {
     id: 3,
@@ -171,7 +189,8 @@ let citas = [
     precioConsulta: 45,
     paciente: 'Carlos Ramírez',
     fecha: '2026-05-23',
-    hora: '09:00'
+    hora: '09:00',
+    estado: 'pendiente'
   },
   {
     id: 4,
@@ -181,7 +200,8 @@ let citas = [
     precioConsulta: 70,
     paciente: 'Lucía Fernández',
     fecha: '2026-05-24',
-    hora: '14:00'
+    hora: '14:00',
+    estado: 'pendiente'
   },
   {
     id: 5,
@@ -191,7 +211,8 @@ let citas = [
     precioConsulta: 60,
     paciente: 'José Castillo',
     fecha: '2026-05-25',
-    hora: '11:00'
+    hora: '11:00',
+    estado: 'pendiente'
   },
   {
     id: 6,
@@ -201,7 +222,8 @@ let citas = [
     precioConsulta: 55,
     paciente: 'María López',
     fecha: '2026-05-26',
-    hora: '17:00'
+    hora: '17:00',
+    estado: 'pendiente'
   },
   {
     id: 7,
@@ -211,7 +233,8 @@ let citas = [
     precioConsulta: 65,
     paciente: 'Oscar Herrera',
     fecha: '2026-05-27',
-    hora: '08:00'
+    hora: '08:00',
+    estado: 'pendiente'
   },
   {
     id: 8,
@@ -221,7 +244,8 @@ let citas = [
     precioConsulta: 80,
     paciente: 'Carlos Ramírez',
     fecha: '2026-05-28',
-    hora: '16:00'
+    hora: '16:00',
+    estado: 'pendiente'
   }
 ];
 
@@ -449,7 +473,8 @@ app.post('/citas', (req, res) => {
     precioConsulta: doctor.precioConsulta,
     paciente,
     fecha,
-    hora
+    hora,
+    estado: 'pendiente'
   };
 
   // Guardar cita
@@ -490,6 +515,30 @@ app.get('/citas', (req, res) => {
 
   // Respuesta
   res.json(resultado);
+});
+
+/* ======================================================
+   MARCAR CITA COMO ATENDIDA
+====================================================== */
+
+app.patch('/citas/:id/estado', (req, res) => {
+
+  const id = Number(req.params.id);
+  const { estado } = req.body; // 'atendida' | 'cancelada' | 'pendiente'
+
+  const index = citas.findIndex(c => c.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ mensaje: 'Cita no encontrada' });
+  }
+
+  citas[index].estado = estado;
+
+  res.json({
+    mensaje: 'Estado actualizado',
+    cita: citas[index]
+  });
+
 });
 
 

@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DoctorService } from '../../../core/services/doctor.service';
-import { CitasService } from '../../../core/services/citas.service';
+import { DoctorService } from '../../admin/services/doctor.service';
+import { CitasService } from '../../../features/cliente/services/citas.service';
 import { Router } from '@angular/router';
 
 @Component({

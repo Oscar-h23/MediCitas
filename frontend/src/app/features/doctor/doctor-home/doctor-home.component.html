@@ -1,0 +1,179 @@
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow">
+
+    <a class="navbar-brand fw-bold fs-3">MediCitas</a>
+  
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-white fw-semibold">
+        <i class="bi bi-person-badge me-1"></i>
+        Dr. {{ usuario?.name }}
+      </span>
+      <button class="btn btn-outline-light" (click)="logOut()">
+        <i class="bi bi-box-arrow-right me-1"></i>
+        Cerrar sesión
+      </button>
+    </div>
+  
+  </nav>
+  
+  <!-- CONTENIDO -->
+  <div class="container py-5">
+  
+    <!-- TITULO -->
+    <div class="mb-4">
+      <h1 class="fw-bold display-5">Mis Citas</h1>
+      <p class="text-muted fs-5">Gestiona tus citas programadas</p>
+    </div>
+  
+    <!-- STATS -->
+    <div class="row g-3 mb-5">
+  
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+          <div class="fs-1 fw-bold text-primary">{{ citas.length }}</div>
+          <div class="text-muted">Total de citas</div>
+        </div>
+      </div>
+  
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+          <div class="fs-1 fw-bold text-success">{{ contarHoy() }}</div>
+          <div class="text-muted">Citas hoy</div>
+        </div>
+      </div>
+  
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+          <div class="fs-1 fw-bold text-info">{{ contarProximas() }}</div>
+          <div class="text-muted">Próximas citas</div>
+        </div>
+      </div>
+  
+    </div>
+  
+    <!-- FILTROS -->
+    <div class="d-flex gap-2 mb-4">
+  
+      <button
+        class="btn rounded-pill px-4"
+        [class.btn-primary]="filtroActivo === 'todas'"
+        [class.btn-outline-primary]="filtroActivo !== 'todas'"
+        (click)="aplicarFiltro('todas')">
+        Todas
+      </button>
+  
+      <button
+        class="btn rounded-pill px-4"
+        [class.btn-success]="filtroActivo === 'hoy'"
+        [class.btn-outline-success]="filtroActivo !== 'hoy'"
+        (click)="aplicarFiltro('hoy')">
+        Hoy
+      </button>
+  
+      <button
+        class="btn rounded-pill px-4"
+        [class.btn-info]="filtroActivo === 'proximas'"
+        [class.btn-outline-info]="filtroActivo !== 'proximas'"
+        (click)="aplicarFiltro('proximas')">
+        Próximas
+      </button>
+  
+      <button
+        class="btn rounded-pill px-4"
+        [class.btn-secondary]="filtroActivo === 'pasadas'"
+        [class.btn-outline-secondary]="filtroActivo !== 'pasadas'"
+        (click)="aplicarFiltro('pasadas')">
+        Pasadas
+      </button>
+  
+    </div>
+  
+    <!-- TABLA -->
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+  
+          <thead class="table-primary">
+            <tr>
+              <th class="px-4 py-3">Paciente</th>
+              <th class="py-3">Fecha</th>
+              <th class="py-3">Hora</th>
+              <th class="py-3">Estado</th>
+              <th class="py-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+  
+            <tr *ngIf="citasFiltradas.length === 0">
+              <td colspan="5" class="text-center text-muted py-5">
+                <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                No hay citas en esta categoría
+              </td>
+            </tr>
+  
+            <tr *ngFor="let cita of citasFiltradas">
+  
+              <td class="px-4">
+                <div class="fw-semibold">{{ cita.paciente }}</div>
+              </td>
+  
+              <td>{{ cita.fecha | date:'dd/MM/yyyy':'':'es-PE' }}</td>
+  
+              <td>
+                <i class="bi bi-clock me-1 text-muted"></i>
+                {{ cita.hora }}
+              </td>
+  
+              <!-- ESTADO -->
+              <td>
+                <span
+                    class="badge rounded-pill px-3 py-2"
+                    [ngClass]="getBadgeClass(cita)">
+                    {{ getBadgeLabel(cita) }}
+                </span>
+              </td>
+  
+              <!-- ACCIONES -->
+              <td class="text-center">
+  
+                <div class="d-flex justify-content-center gap-2">
+  
+                  <!-- Marcar atendida: solo si no está atendida ni cancelada -->
+                  <button
+                    *ngIf="cita.estado !== 'atendida' && cita.estado !== 'cancelada'"
+                    class="btn btn-sm btn-outline-success rounded-pill px-3"
+                    (click)="marcarAtendida(cita.id)">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Atendida
+                  </button>
+  
+                  <!-- Cancelar: solo si no está atendida ni cancelada -->
+                  <button
+                    *ngIf="cita.estado !== 'atendida' && cita.estado !== 'cancelada'"
+                    class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                    (click)="cancelarCita(cita.id)">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Cancelar
+                  </button>
+  
+                  <!-- Mensaje si ya fue procesada -->
+                  <span
+                    *ngIf="cita.estado === 'atendida' || cita.estado === 'cancelada'"
+                    class="text-muted fst-italic small">
+                    Sin acciones
+                  </span>
+  
+                </div>
+  
+              </td>
+  
+            </tr>
+  
+          </tbody>
+  
+        </table>
+      </div>
+    </div>
+  
+  </div>

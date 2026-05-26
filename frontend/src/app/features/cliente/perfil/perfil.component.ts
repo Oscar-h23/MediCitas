@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgClass],
   templateUrl: './perfil.component.html'
 })
 export class PerfilComponent implements OnInit {
@@ -65,13 +65,17 @@ export class PerfilComponent implements OnInit {
   }
 
   get citasPendientes(): any[] {
-    const hoy = new Date().toISOString().split('T')[0];
-    return this.citas.filter(c => c.fecha >= hoy);
+    return this.citas.filter(
+      c => c.estado === 'pendiente'
+    );
   }
-
+  
   get citasPasadas(): any[] {
-    const hoy = new Date().toISOString().split('T')[0];
-    return this.citas.filter(c => c.fecha < hoy);
+    return this.citas.filter(
+      c =>
+        c.estado === 'atendida' ||
+        c.estado === 'cancelada'
+    );
   }
 
   getNombreDoctor(doctorId: number): string {
@@ -95,6 +99,39 @@ export class PerfilComponent implements OnInit {
         this.error = 'Error al cancelar la cita.';
       }
     });
+  }
+  getBadgeClass(cita: any): string {
+
+    if (cita.estado === 'pendiente') {
+      return 'bg-warning text-dark';
+    }
+  
+    if (cita.estado === 'atendida') {
+      return 'bg-success';
+    }
+  
+    if (cita.estado === 'cancelada') {
+      return 'bg-danger';
+    }
+  
+    return 'bg-secondary';
+  }
+  
+  getBadgeLabel(cita: any): string {
+  
+    if (cita.estado === 'pendiente') {
+      return 'Pendiente';
+    }
+  
+    if (cita.estado === 'atendida') {
+      return 'Atendida';
+    }
+  
+    if (cita.estado === 'cancelada') {
+      return 'Cancelada';
+    }
+  
+    return 'Sin estado';
   }
 
   cerrarSesion(): void {

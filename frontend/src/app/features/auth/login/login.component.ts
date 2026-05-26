@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -39,6 +39,8 @@ export class LoginComponent {
 
       if (resp.usuario.rol === 'admin') {
         this.router.navigate(['/admin']);
+      } else if (resp.usuario.rol === 'doctor') {
+        this.router.navigate(['/doctor']);
       } else {
         this.router.navigate(['/cliente']);
       }

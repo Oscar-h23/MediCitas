@@ -5,14 +5,26 @@ export const authGuard: CanActivateFn = () => {
 
   const router = inject(Router);
 
-  const usuario = localStorage.getItem('usuario');
+  try {
+    const raw = localStorage.getItem('usuario');
+    if (!raw) {
+      router.navigate(['/']);
+      return false;
+    }
 
-  if (usuario) {
+    const usuario = JSON.parse(raw);
+
+    if (!usuario?.id || !usuario?.email || !usuario?.rol) {
+      localStorage.removeItem('usuario'); 
+      return false;
+    }
+
     return true;
+
+  } catch {
+    localStorage.removeItem('usuario');
+    router.navigate(['/']);
+    return false;
   }
-
-  router.navigate(['/']);
-
-  return false;
 
 };

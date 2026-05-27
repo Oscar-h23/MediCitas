@@ -50,11 +50,14 @@ export class AdminComponent implements OnInit {
   get totalUsuarios() { return this.usuarios.length; }
 
   get citasPendientes(): number {
-    return this.citas.filter(c => c.fecha >= this.hoy).length;
+    return this.citas.filter(c => c.estado === 'pendiente').length;
   }
 
-  get citasPasadas(): number {
-    return this.citas.filter(c => c.fecha < this.hoy).length;
+  get citasCanceladas(): number {
+    return this.citas.filter(c => c.estado === 'cancelada').length;
+  }
+  get citasAtendidas(): number {
+    return this.citas.filter(c => c.estado === 'atendida').length;
   }
 
   get citasHoy(): number {
@@ -65,10 +68,15 @@ export class AdminComponent implements OnInit {
     if (this.totalCitas === 0) return 0;
     return Math.round((this.citasPendientes / this.totalCitas) * 100);
   }
-
-  get porcentajePasadas(): number {
+  
+  get porcentajeAtendidas(): number {
     if (this.totalCitas === 0) return 0;
-    return Math.round((this.citasPasadas / this.totalCitas) * 100);
+    return Math.round((this.citasAtendidas / this.totalCitas) * 100);
+  }
+  
+  get porcentajeCanceladas(): number {
+    if (this.totalCitas === 0) return 0;
+    return Math.round((this.citasCanceladas / this.totalCitas) * 100);
   }
 
   /* =========================
@@ -255,6 +263,60 @@ export class AdminComponent implements OnInit {
 
   medallaEmoji(i: number): string {
     return i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '▸';
+  }
+  getBadgeClass(cita: any): string {
+
+    const hoy = new Date().toISOString().split('T')[0];
+  
+    if (cita.estado === 'atendida') {
+      return 'bg-success';
+    }
+  
+    if (cita.estado === 'cancelada') {
+      return 'bg-danger';
+    }
+  
+    if (cita.estado === 'pendiente') {
+  
+      if (cita.fecha < hoy) {
+        return 'bg-dark';
+      }
+  
+      if (cita.fecha === hoy) {
+        return 'bg-warning text-dark';
+      }
+  
+      return 'bg-primary';
+    }
+  
+    return 'bg-secondary';
+  }
+  getBadgeLabel(cita: any): string {
+
+    const hoy = new Date().toISOString().split('T')[0];
+  
+    if (cita.estado === 'atendida') {
+      return 'Atendida';
+    }
+  
+    if (cita.estado === 'cancelada') {
+      return 'Cancelada';
+    }
+  
+    if (cita.estado === 'pendiente') {
+  
+      if (cita.fecha < hoy) {
+        return 'Pendiente vencida';
+      }
+  
+      if (cita.fecha === hoy) {
+        return 'Pendiente · Hoy';
+      }
+  
+      return 'Pendiente';
+    }
+  
+    return 'Sin estado';
   }
 
 }

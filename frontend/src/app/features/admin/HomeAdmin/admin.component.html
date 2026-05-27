@@ -128,55 +128,123 @@
         </div>
   
         <!-- CITAS HOY + DISTRIBUCIÓN -->
-        <div class="row g-4 mb-4">
-  
-          <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
-              <h6 class="fw-bold text-muted mb-3">
-                <i class="bi bi-calendar-day me-2"></i>Citas hoy
-              </h6>
-              <h1 class="fw-bold text-primary">{{ citasHoy }}</h1>
-              <p class="text-muted mb-0">citas programadas para hoy</p>
-            </div>
-          </div>
-  
-          <div class="col-md-8">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
-  
-              <h6 class="fw-bold text-muted mb-3">
-                <i class="bi bi-pie-chart me-2"></i>Distribución de citas
-              </h6>
-  
-              <div class="mb-3">
-                <div class="d-flex justify-content-between mb-1">
-                  <span class="small fw-semibold">Pendientes</span>
-                  <span class="small text-muted">{{ citasPendientes }} ({{ porcentajePendientes }}%)</span>
-                </div>
-                <div class="progress" style="height: 10px; border-radius: 10px;">
-                  <div
-                    class="progress-bar bg-success"
-                    [style.width.%]="porcentajePendientes">
-                  </div>
-                </div>
-              </div>
-  
-              <div>
-                <div class="d-flex justify-content-between mb-1">
-                  <span class="small fw-semibold">Completadas</span>
-                  <span class="small text-muted">{{ citasPasadas }} ({{ porcentajePasadas }}%)</span>
-                </div>
-                <div class="progress" style="height: 10px; border-radius: 10px;">
-                  <div
-                    class="progress-bar bg-secondary"
-                    [style.width.%]="porcentajePasadas">
-                  </div>
-                </div>
-              </div>
-  
-            </div>
-          </div>
-  
+<div class="row g-4 mb-4">
+
+  <!-- Citas hoy -->
+  <div class="col-md-4">
+    <div
+      class="card border-0 shadow-sm p-4 h-100"
+      style="border-radius: 16px;">
+
+      <h6 class="fw-bold text-muted mb-3">
+        <i class="bi bi-calendar-day me-2"></i>
+        Citas hoy
+      </h6>
+
+      <h1 class="fw-bold text-primary">
+        {{ citasHoy }}
+      </h1>
+
+      <p class="text-muted mb-0">
+        citas programadas para hoy
+      </p>
+
+    </div>
+  </div>
+
+  <!-- Distribución real -->
+  <div class="col-md-8">
+    <div
+      class="card border-0 shadow-sm p-4 h-100"
+      style="border-radius: 16px;">
+
+      <h6 class="fw-bold text-muted mb-4">
+        <i class="bi bi-pie-chart me-2"></i>
+        Distribución de citas
+      </h6>
+
+      <!-- Pendientes -->
+      <div class="mb-3">
+
+        <div class="d-flex justify-content-between mb-1">
+          <span class="small fw-semibold">
+            Pendientes
+          </span>
+
+          <span class="small text-muted">
+            {{ citasPendientes }}
+            ({{ porcentajePendientes }}%)
+          </span>
         </div>
+
+        <div
+          class="progress"
+          style="height:10px;border-radius:10px;">
+
+          <div
+            class="progress-bar bg-primary"
+            [style.width.%]="porcentajePendientes">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Atendidas -->
+      <div class="mb-3">
+
+        <div class="d-flex justify-content-between mb-1">
+          <span class="small fw-semibold">
+            Atendidas
+          </span>
+
+          <span class="small text-muted">
+            {{ citasAtendidas }}
+            ({{ porcentajeAtendidas }}%)
+          </span>
+        </div>
+
+        <div
+          class="progress"
+          style="height:10px;border-radius:10px;">
+
+          <div
+            class="progress-bar bg-success"
+            [style.width.%]="porcentajeAtendidas">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Canceladas -->
+      <div>
+
+        <div class="d-flex justify-content-between mb-1">
+          <span class="small fw-semibold">
+            Canceladas
+          </span>
+
+          <span class="small text-muted">
+            {{ citasCanceladas }}
+            ({{ porcentajeCanceladas }}%)
+          </span>
+        </div>
+
+        <div
+          class="progress"
+          style="height:10px;border-radius:10px;">
+
+          <div
+            class="progress-bar bg-danger"
+            [style.width.%]="porcentajeCanceladas">
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
   
         <!-- TOP PACIENTES / DOCTORES / ESPECIALIDADES -->
         <div class="row g-4 mb-4">
@@ -295,10 +363,9 @@
                   <td>{{ cita.hora }}</td>
                   <td>
                     <span
-                      class="badge"
-                      [class.bg-success]="cita.fecha >= hoy"
-                      [class.bg-secondary]="cita.fecha < hoy">
-                      {{ cita.fecha >= hoy ? 'Pendiente' : 'Completada' }}
+                      class="badge rounded-pill px-3 py-2"
+                      [ngClass]="getBadgeClass(cita)">
+                      {{ getBadgeLabel(cita) }}
                     </span>
                   </td>
                 </tr>
@@ -464,10 +531,9 @@
                 <td>{{ cita.hora }}</td>
                 <td>
                   <span
-                    class="badge"
-                    [class.bg-success]="cita.fecha >= hoy"
-                    [class.bg-secondary]="cita.fecha < hoy">
-                    {{ cita.fecha >= hoy ? 'Pendiente' : 'Completada' }}
+                    class="badge rounded-pill px-3 py-2"
+                    [ngClass]="getBadgeClass(cita)">
+                    {{ getBadgeLabel(cita) }}
                   </span>
                 </td>
                 <td>
@@ -513,6 +579,7 @@
                   <span
                     class="badge"
                     [class.bg-warning]="u.rol === 'admin'"
+                    [class.bg-success]="u.rol === 'doctor'"
                     [class.bg-primary]="u.rol === 'cliente'">
                     {{ u.rol }}
                   </span>
